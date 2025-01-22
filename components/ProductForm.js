@@ -12,6 +12,10 @@ export default function ProductForm({
   images:existingImages,
   category:assignedCategory,
   properties:assignedProperties,
+  details:existingDetails,
+  included: existingIncluded,
+  notIncluded: existingNotIncluded, 
+  address: existingAddress
 }) {
   const [title,setTitle] = useState(existingTitle || '');
   const [description,setDescription] = useState(existingDescription || '');
@@ -22,6 +26,12 @@ export default function ProductForm({
   const [goToProducts,setGoToProducts] = useState(false);
   const [isUploading,setIsUploading] = useState(false);
   const [categories,setCategories] = useState([]);
+  const [details, setDetails] = useState(existingDetails || '');
+  const [included, setIncluded] = useState(existingIncluded || '');
+  const [notIncluded, setNotIncluded] = useState(existingNotIncluded || '');
+  const [address, setAddress] = useState(existingAddress || '');
+
+
   const router = useRouter();
   useEffect(() => {
     axios.get('/api/categories').then(result => {
@@ -31,7 +41,7 @@ export default function ProductForm({
   async function saveProduct(ev) {
     ev.preventDefault();
     const data = {
-      title,description,price,images,category,
+      title,description,price,images,category, details, included, notIncluded, address,
       properties:productProperties
     };
     if (_id) {
@@ -46,6 +56,7 @@ export default function ProductForm({
   if (goToProducts) {
     router.push('/products');
   }
+
   async function uploadImages(ev) {
     const files = ev.target?.files;
     if (files?.length > 0) {
@@ -61,9 +72,11 @@ export default function ProductForm({
       setIsUploading(false);
     }
   }
+
   function updateImagesOrder(images) {
     setImages(images);
   }
+  
   function setProductProp(propName,value) {
     setProductProperties(prev => {
       const newProductProps = {...prev};
@@ -149,6 +162,12 @@ export default function ProductForm({
           placeholder="description"
           value={description}
           onChange={ev => setDescription(ev.target.value)}
+        />
+        <label>address</label>
+        <textarea
+          placeholder="Address"
+          value={address}
+          onChange={ev => setAddress(ev.target.value)}
         />
         <label>Price (in USD)</label>
         <input
