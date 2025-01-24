@@ -76,4 +76,4 @@ export default function Tours() {
       </table>
     </Layout>
   );
-}
+};
