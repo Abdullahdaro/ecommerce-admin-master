@@ -39,6 +39,7 @@ const tourSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-const Tour = mongoose.model('Tour', tourSchema);
+// Check if the model exists before creating it
+const Tour = mongoose.models.Tour || mongoose.model('Tour', tourSchema);
 
 module.exports = Tour; 

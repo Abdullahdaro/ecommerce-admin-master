@@ -42,15 +42,12 @@ export default function TourForm({
       startDates, location, rating,
     };
     if (_id) {
-      //update
       await axios.put('/api/tours', {...data,_id});
     } else {
-      //create
       await axios.post('/api/tours', data);
     }
     setGoToTours(true);
   }
-
   if (goToTours) {
     router.push('/tours');
   }

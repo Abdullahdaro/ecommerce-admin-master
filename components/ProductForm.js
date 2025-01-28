@@ -45,10 +45,8 @@ export default function ProductForm({
       properties:productProperties
     };
     if (_id) {
-      //update
       await axios.put('/api/products', {...data,_id});
     } else {
-      //create
       await axios.post('/api/products', data);
     }
     setGoToProducts(true);
@@ -62,14 +60,20 @@ export default function ProductForm({
     if (files?.length > 0) {
       setIsUploading(true);
       const data = new FormData();
-      for (const file of files) {
-        data.append('file', file);
+      try {
+        for (const file of files) {
+          data.append('file', file);
+        }
+        const res = await axios.post('/api/upload', data);
+        setImages(oldImages => {
+          return [...oldImages, ...res.data.links];
+        });
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        alert('Error uploading images. Please try again.');
+      } finally {
+        setIsUploading(false);
       }
-      const res = await axios.post('/api/upload', data);
-      setImages(oldImages => {
-        return [...oldImages, ...res.data.links];
-      });
-      setIsUploading(false);
     }
   }
 

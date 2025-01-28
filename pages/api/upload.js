@@ -4,6 +4,8 @@ import fs from 'fs';
 import mime from 'mime-types';
 import {mongooseConnect} from "@/lib/mongoose";
 import {isAdminRequest} from "@/pages/api/auth/[...nextauth]";
+
+
 const bucketName = 'dawid-next-ecommerce';
 
 export default async function handle(req,res) {
