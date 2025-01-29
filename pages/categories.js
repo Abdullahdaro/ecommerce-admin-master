@@ -2,6 +2,8 @@ import Layout from "@/components/Layout";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import { withSwal } from 'react-sweetalert2';
+import Spinner from "@/components/Spinner";
+import {ReactSortable} from "react-sortablejs";
 
 function Categories({swal}) {
   const [editedCategory, setEditedCategory] = useState(null);
@@ -9,14 +11,20 @@ function Categories({swal}) {
   const [parentCategory,setParentCategory] = useState('');
   const [categories,setCategories] = useState([]);
   const [properties,setProperties] = useState([]);
+  const [description,setDescription] = useState('');
+  const [images,setImages] = useState([]);
+  const [isUploading,setIsUploading] = useState(false);
+
   useEffect(() => {
     fetchCategories();
   }, [])
+
   function fetchCategories() {
     axios.get('/api/categories').then(result => {
       setCategories(result.data);
     });
   }
+
   async function saveCategory(ev){
     ev.preventDefault();
     const data = {
@@ -26,6 +34,8 @@ function Categories({swal}) {
         name:p.name,
         values:p.values.split(','),
       })),
+      description,
+      images,
     };
     if (editedCategory) {
       data._id = editedCategory._id;
@@ -37,8 +47,11 @@ function Categories({swal}) {
     setName('');
     setParentCategory('');
     setProperties([]);
+    setDescription('');
+    setImages([]);
     fetchCategories();
   }
+
   function editCategory(category){
     setEditedCategory(category);
     setName(category.name);
@@ -49,7 +62,10 @@ function Categories({swal}) {
       values:values.join(',')
     }))
     );
+    setDescription(category.description || '');
+    setImages(category.images || []);
   }
+
   function deleteCategory(category){
     swal.fire({
       title: 'Are you sure?',
@@ -67,11 +83,13 @@ function Categories({swal}) {
       }
     });
   }
+
   function addProperty() {
     setProperties(prev => {
       return [...prev, {name:'',values:''}];
     });
   }
+
   function handlePropertyNameChange(index,property,newName) {
     setProperties(prev => {
       const properties = [...prev];
@@ -79,6 +97,7 @@ function Categories({swal}) {
       return properties;
     });
   }
+
   function handlePropertyValuesChange(index,property,newValues) {
     setProperties(prev => {
       const properties = [...prev];
@@ -86,6 +105,7 @@ function Categories({swal}) {
       return properties;
     });
   }
+
   function removeProperty(indexToRemove) {
     setProperties(prev => {
       return [...prev].filter((p,pIndex) => {
@@ -93,6 +113,33 @@ function Categories({swal}) {
       });
     });
   }
+
+  async function uploadImages(ev) {
+    const files = ev.target?.files;
+    if (files?.length > 0) {
+      setIsUploading(true);
+      const data = new FormData();
+      try {
+        for (const file of files) {
+          data.append('file', file);
+        }
+        const res = await axios.post('/api/upload', data);
+        setImages(oldImages => {
+          return [...oldImages, ...res.data.links];
+        });
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        alert('Error uploading images. Please try again.');
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  }
+
+  function updateImagesOrder(images) {
+    setImages(images);
+  }
+
   return (
     <Layout>
       <h1>Categories</h1>
@@ -116,6 +163,41 @@ function Categories({swal}) {
               <option key={category._id} value={category._id}>{category.name}</option>
             ))}
           </select>
+        </div>
+        <div className="mb-2">
+          <label>Description</label>
+          <textarea
+            placeholder="Category description"
+            value={description}
+            onChange={ev => setDescription(ev.target.value)}
+          />
+        </div>
+        <div className="mb-2">
+          <label>Photos</label>
+          <div className="flex flex-wrap gap-1">
+            <ReactSortable
+              list={images}
+              className="flex flex-wrap gap-1"
+              setList={updateImagesOrder}>
+              {!!images?.length && images.map(link => (
+                <div key={link} className="h-24 bg-white p-4 shadow-sm rounded-sm border border-gray-200">
+                  <img src={link} alt="" className="rounded-lg"/>
+                </div>
+              ))}
+            </ReactSortable>
+            {isUploading && (
+              <div className="h-24 flex items-center">
+                <Spinner />
+              </div>
+            )}
+            <label className="w-24 h-24 cursor-pointer text-center flex flex-col items-center justify-center text-sm gap-1 text-primary rounded-sm bg-white shadow-sm border border-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              </svg>
+              <div>Add image</div>
+              <input type="file" onChange={uploadImages} className="hidden"/>
+            </label>
+          </div>
         </div>
         <div className="mb-2">
           <label className="block">Properties</label>
@@ -159,6 +241,8 @@ function Categories({swal}) {
                 setName('');
                 setParentCategory('');
                 setProperties([]);
+                setDescription('');
+                setImages([]);
               }}
               className="btn-default">Cancel</button>
           )}
