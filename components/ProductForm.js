@@ -30,6 +30,7 @@ export default function ProductForm({
   const [included, setIncluded] = useState(existingIncluded || '');
   const [notIncluded, setNotIncluded] = useState(existingNotIncluded || '');
   const [address, setAddress] = useState(existingAddress || '');
+  const [selectedFile, setSelectedFile] = useState(null);
 
 
   const router = useRouter();
@@ -41,19 +42,37 @@ export default function ProductForm({
   async function saveProduct(ev) {
     ev.preventDefault();
     const data = {
-      title,description,price,images,category, details, included, notIncluded, address,
-      properties:productProperties
+      title,
+      description,
+      price,
+      images,
+      category,
+      properties: productProperties,
+      details,
+      included,
+      notIncluded,
+      address,
     };
-    if (_id) {
-      await axios.put('/api/products', {...data,_id});
-    } else {
-      await axios.post('/api/products', data);
+
+    try {
+      if (_id) {
+        await axios.put('/api/products', {...data, _id});
+      } else {
+        await axios.post('/api/products', data);
+      }
+      setGoToProducts(true);
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('Error saving product. Please try again.');
     }
-    setGoToProducts(true);
   }
   if (goToProducts) {
     router.push('/products');
   }
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
 
   async function uploadImages(ev) {
     const files = ev.target?.files;
@@ -66,7 +85,14 @@ export default function ProductForm({
         }
         const res = await axios.post('/api/upload', data);
         setImages(oldImages => {
-          return [...oldImages, ...res.data.links];
+          const newImages = [...oldImages, ...res.data.links];
+          if (_id) {
+            axios.put('/api/products', {
+              _id,
+              images: newImages,
+            });
+          }
+          return newImages;
         });
       } catch (error) {
         console.error('Error uploading images:', error);
@@ -100,6 +126,7 @@ export default function ProductForm({
     }
   }
 
+  
   return (
       <form onSubmit={saveProduct}>
         <label>Product name</label>
@@ -158,7 +185,7 @@ export default function ProductForm({
             <div>
               Add image
             </div>
-            <input type="file" onChange={uploadImages} className="hidden"/>
+            <input type="file" onChange={uploadImages} className="hidden" />
           </label>
         </div>
         <label>Description</label>

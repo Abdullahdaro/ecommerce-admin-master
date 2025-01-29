@@ -16,25 +16,49 @@ export default async function handle(req, res) {
   }
 
   if (method === 'POST') {
-    const {title,description,price,images,category,properties, address, details,
-      included,
-      notIncluded} = req.body;
-    const productDoc = await Product.create({
-      title,description,price,images,category,properties, address, details,
-      included,
-      notIncluded
-    })
-    res.json(productDoc);
+    try {
+      const {title, description, price, images, category, properties, address, details,
+        included,
+        notIncluded} = req.body;
+      const productDoc = await Product.create({
+        title,
+        description,
+        price,
+        images,
+        category,
+        properties,
+        address,
+        details,
+        included,
+        notIncluded
+      });
+      res.json(productDoc);
+    } catch (error) {
+      res.status(500).json({error: error.message});
+    }
   }
 
   if (method === 'PUT') {
-    const {title,description,price,images,category,properties,_id, address, details,
-      included,
-      notIncluded} = req.body;
-    await Product.updateOne({_id}, {title,description,price,images,category,properties, address, details,
-      included,
-      notIncluded});
-    res.json(true);
+    try {
+      const {title, description, price, images, _id, category, properties, address, details,
+        included,
+        notIncluded} = req.body;
+      await Product.updateOne({_id}, {
+        title,
+        description,
+        price,
+        images,
+        category,
+        properties,
+        address,
+        details,
+        included,
+        notIncluded
+      });
+      res.json(true);
+    } catch (error) {
+      res.status(500).json({error: error.message});
+    }
   }
 
   if (method === 'DELETE') {
