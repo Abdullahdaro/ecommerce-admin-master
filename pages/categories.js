@@ -25,31 +25,39 @@ function Categories({swal}) {
     });
   }
 
-  async function saveCategory(ev){
+  async function saveCategory(ev) {
     ev.preventDefault();
-    const data = {
-      name,
-      parentCategory,
-      properties:properties.map(p => ({
-        name:p.name,
-        values:p.values.split(','),
-      })),
-      description,
-      images,
-    };
-    if (editedCategory) {
-      data._id = editedCategory._id;
-      await axios.put('/api/categories', data);
-      setEditedCategory(null);
-    } else {
-      await axios.post('/api/categories', data);
+    try {
+      const data = {
+        name,
+        parent: parentCategory || undefined,
+        properties: properties.map(p => ({
+          name:p.name,
+          values:p.values.split(','),
+        })),
+        description,
+        images,
+      };
+      console.log('Submitting category data:', data);
+
+      if (editedCategory) {
+        data._id = editedCategory._id;
+        await axios.put('/api/categories', {...data, _id: editedCategory._id});
+        setEditedCategory(null);
+      } else {
+        await axios.post('/api/categories', data);
+      }
+      
+      setName('');
+      setParentCategory('');
+      setProperties([]);
+      setDescription('');
+      setImages([]);
+      fetchCategories();
+    } catch (error) {
+      console.error('Error saving category:', error);
+      alert('Error saving category. Please try again.');
     }
-    setName('');
-    setParentCategory('');
-    setProperties([]);
-    setDescription('');
-    setImages([]);
-    fetchCategories();
   }
 
   function editCategory(category){
@@ -124,8 +132,12 @@ function Categories({swal}) {
           data.append('file', file);
         }
         const res = await axios.post('/api/upload', data);
+        console.log('Upload response:', res.data);
+        
         setImages(oldImages => {
-          return [...oldImages, ...res.data.links];
+          const newImages = [...oldImages, ...res.data.links];
+          console.log('New images array:', newImages);
+          return newImages;
         });
       } catch (error) {
         console.error('Error uploading images:', error);

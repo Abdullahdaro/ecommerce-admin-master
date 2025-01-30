@@ -13,27 +13,44 @@ export default async function handle(req, res) {
   }
 
   if (method === 'POST') {
-    const {name,parentCategory,properties,description,images} = req.body;
-    const categoryDoc = await Category.create({
-      name,
-      parent: parentCategory || undefined,
-      properties,
-      description,
-      images,
-    });
-    res.json(categoryDoc);
+    try {
+      const {name,parentCategory,properties,description,images} = req.body;
+      console.log('Received data:', {name,parentCategory,properties,description,images}); // Debug log
+      
+      const categoryDoc = await Category.create({
+        name,
+        parent: parentCategory || undefined,
+        properties,
+        description,
+        images, // Make sure this is an array
+      });
+      console.log('Saved category:', categoryDoc); // Debug log
+      res.json(categoryDoc);
+    } catch (error) {
+      console.error('Error saving category:', error);
+      res.status(500).json({ error: error.message });
+    }
   }
 
   if (method === 'PUT') {
-    const {name,parentCategory,properties,description,images,_id} = req.body;
-    const categoryDoc = await Category.updateOne({_id},{
-      name,
-      parent: parentCategory || undefined,
-      properties,
-      description,
-      images,
-    });
-    res.json(categoryDoc);
+    try {
+      const {name,parentCategory,properties,description,images,_id} = req.body;
+      console.log('Updating category with:', {name,parentCategory,properties,description,images}); // Debug log
+      
+      const categoryDoc = await Category.findByIdAndUpdate(_id, {
+        name,
+        parent: parentCategory || undefined,
+        properties,
+        description,
+        images,
+      }, { new: true }); // Return updated document
+      
+      console.log('Updated category:', categoryDoc); // Debug log
+      res.json(categoryDoc);
+    } catch (error) {
+      console.error('Error updating category:', error);
+      res.status(500).json({ error: error.message });
+    }
   }
 
   if (method === 'DELETE') {
