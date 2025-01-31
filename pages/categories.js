@@ -157,14 +157,14 @@ function Categories({swal}) {
       <h1>Categories</h1>
       <label>
         {editedCategory
-          ? `Edit category ${editedCategory.name}`
-          : 'Create new category'}
+          ? `Edit the name of the city ${editedCategory.name}`
+          : 'Create new city'}
       </label>
       <form onSubmit={saveCategory}>
         <div className="flex gap-1">
           <input
             type="text"
-            placeholder={'Category name'}
+            placeholder={'City name'}
             onChange={ev => setName(ev.target.value)}
             value={name}/>
           <select
@@ -176,10 +176,10 @@ function Categories({swal}) {
             ))}
           </select>
         </div>
-        <div className="mb-2">
+          <div className="mb-2">
           <label>Description</label>
           <textarea
-            placeholder="Category description"
+            placeholder="City description"
             value={description}
             onChange={ev => setDescription(ev.target.value)}
           />
@@ -268,8 +268,8 @@ function Categories({swal}) {
         <table className="basic mt-4">
           <thead>
           <tr>
-            <td>Category name</td>
-            <td>Parent category</td>
+            <td>City name</td>
+            <td>Parent city</td>  
             <td></td>
           </tr>
           </thead>
