@@ -5,11 +5,22 @@ import axios from "axios";
 
 export default function Products() {
   const [products,setProducts] = useState([]);
+  const [categories,setCategories] = useState([]);
+
   useEffect(() => {
     axios.get('/api/products').then(response => {
       setProducts(response.data);
     });
+    axios.get('/api/categories').then(response => {
+      setCategories(response.data);
+    });
   }, []);
+
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat._id === categoryId);
+    return category?.name || 'No category';
+  };
+
   return (
     <Layout>
       <Link className="btn-primary" href={'/products/new'}>Add new product</Link>
@@ -26,7 +37,7 @@ export default function Products() {
           {products.map(product => (
             <tr key={product._id}>
               <td>{product.title}</td>
-              <td>{product.category.name}</td>
+              <td>{getCategoryName(product.category)}</td>
               <td>{product.price}</td>
               <td>
                 <Link className="btn-default" href={'/products/edit/'+product._id}>
