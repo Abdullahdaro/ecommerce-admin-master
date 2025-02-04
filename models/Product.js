@@ -11,6 +11,11 @@ const ProductSchema = new Schema({
   images: [{type:String}],
   category: {type:mongoose.Types.ObjectId, ref:'Category'},
   properties: {type:Object},
+  language: [{type:String}],
+  numberOfSeats: {type:String},
+  babySeat: {type:String},
+  disableSeat: {type:String},
+  meetAndGreet: {type:String},
 }, {
   timestamps: true,
 });

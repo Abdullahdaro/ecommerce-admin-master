@@ -29,6 +29,11 @@ export default function ProductForm({
   const [details, setDetails] = useState(existingDetails || '');
   const [included, setIncluded] = useState(existingIncluded || '');
   const [notIncluded, setNotIncluded] = useState(existingNotIncluded || '');
+  const [language, setLanguage] = useState([]);
+  const [numberOfSeats, setNumberOfSeats] = useState('');
+  const [babySeat, setBabySeat] = useState('');
+  const [disableSeat, setDisableSeat] = useState('');
+  const [meetAndGreet, setMeetAndGreet] = useState('');
   const [address, setAddress] = useState(existingAddress || '');
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -52,6 +57,11 @@ export default function ProductForm({
       included,
       notIncluded,
       address,
+      language,
+      numberOfSeats,
+      babySeat,
+      disableSeat,
+      meetAndGreet,
     };
 
     try {
@@ -145,7 +155,7 @@ export default function ProductForm({
         </select>
         {propertiesToFill.length > 0 && propertiesToFill.map(p => (
           <div key={p.name} className="">
-            <label>{p.name[0].toUpperCase()+p.name.substring(1)}</label>
+            <label>{p.name}</label>
             <div>
               <select value={productProperties[p.name]}
                       onChange={ev =>
@@ -194,12 +204,37 @@ export default function ProductForm({
           value={description}
           onChange={ev => setDescription(ev.target.value)}
         />
-        <label>address</label>
-        <textarea
-          placeholder="Address"
-          value={address}
-          onChange={ev => setAddress(ev.target.value)}
-        />
+        <label>Language</label>
+        <select multiple value={language} onChange={ev => setLanguage(ev.target.value)}>
+          <option value="en">English</option>
+          <option value="ar">Arabic</option>
+          <option value="fr">French</option>
+          <option value="es">Spanish</option>
+          <option value="tr">Turkish</option>
+          <option value="de">Russian</option>
+        </select>
+        <label>Number of seats</label>
+        <select value={numberOfSeats} onChange={ev => setNumberOfSeats(ev.target.value)}>
+          <option value="1">1</option>
+          <option value="1-3">1-3</option>
+          <option value="2-6">4-6</option>
+          <option value="7-14">7-14</option>
+        </select>
+        <label>Baby seat</label>
+        <select value={babySeat} onChange={ev => setBabySeat(ev.target.value)}>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+        <label>Disable seat</label>
+        <select value={disableSeat} onChange={ev => setDisableSeat(ev.target.value)}>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+        <lable>Meet & greet</lable>
+        <select value={meetAndGreet} onChange={ev => setMeetAndGreet(ev.target.value)}>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
         <label>Price (in USD)</label>
         <input
           type="number" placeholder="price"
