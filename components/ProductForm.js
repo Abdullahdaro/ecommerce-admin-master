@@ -15,7 +15,13 @@ export default function ProductForm({
   details:existingDetails,
   included: existingIncluded,
   notIncluded: existingNotIncluded, 
-  address: existingAddress
+  address: existingAddress,
+  language:existingLanguage,
+  numberOfSeats:existingNumberOfSeats,
+  babySeat:existingBabySeat,
+  disableSeat:existingDisableSeat,
+  meetAndGreet:existingMeetAndGreet,  
+
 }) {
   const [title,setTitle] = useState(existingTitle || '');
   const [description,setDescription] = useState(existingDescription || '');
@@ -26,17 +32,12 @@ export default function ProductForm({
   const [goToProducts,setGoToProducts] = useState(false);
   const [isUploading,setIsUploading] = useState(false);
   const [categories,setCategories] = useState([]);
-  const [details, setDetails] = useState(existingDetails || '');
-  const [included, setIncluded] = useState(existingIncluded || '');
-  const [notIncluded, setNotIncluded] = useState(existingNotIncluded || '');
-  const [language, setLanguage] = useState([]);
-  const [numberOfSeats, setNumberOfSeats] = useState('');
-  const [babySeat, setBabySeat] = useState('');
-  const [disableSeat, setDisableSeat] = useState('');
-  const [meetAndGreet, setMeetAndGreet] = useState('');
-  const [address, setAddress] = useState(existingAddress || '');
+  const [language, setLanguage] = useState(existingLanguage || []);
+  const [numberOfSeats, setNumberOfSeats] = useState(existingNumberOfSeats || '');
+  const [babySeat, setBabySeat] = useState(existingBabySeat || '');
+  const [disableSeat, setDisableSeat] = useState(existingDisableSeat || '');
+  const [meetAndGreet, setMeetAndGreet] = useState(existingMeetAndGreet || '');
   const [selectedFile, setSelectedFile] = useState(null);
-
 
   const router = useRouter();
   useEffect(() => {
@@ -53,10 +54,6 @@ export default function ProductForm({
       images,
       category,
       properties: productProperties,
-      details,
-      included,
-      notIncluded,
-      address,
       language,
       numberOfSeats,
       babySeat,
@@ -64,9 +61,12 @@ export default function ProductForm({
       meetAndGreet,
     };
 
+    console.log('data', data);
+
     try {
       if (_id) {
         await axios.put('/api/products', {...data, _id});
+
       } else {
         await axios.post('/api/products', data);
       }
@@ -136,7 +136,31 @@ export default function ProductForm({
     }
   }
 
-  
+  // Language options with labels
+  const languageOptions = {
+    en: 'English',
+    ar: 'Arabic',
+    fr: 'French',
+    es: 'Spanish',
+    tr: 'Turkish',
+    ru: 'Russian'
+  };
+
+  const handleLanguageChange = (ev) => {
+    const value = ev.target.value;
+    setLanguage(prev => {
+      if (prev.includes(value)) {
+        return prev.filter(lang => lang !== value);
+      } else {
+        return [...prev, value];
+      }
+    });
+  };
+
+  const removeLanguage = (langToRemove) => {
+    setLanguage(prev => prev.filter(lang => lang !== langToRemove));
+  };
+
   return (
       <form onSubmit={saveProduct}>
         <label>Product name</label>
@@ -205,14 +229,39 @@ export default function ProductForm({
           onChange={ev => setDescription(ev.target.value)}
         />
         <label>Language</label>
-        <select multiple value={language} onChange={ev => setLanguage(ev.target.value)}>
-          <option value="en">English</option>
-          <option value="ar">Arabic</option>
-          <option value="fr">French</option>
-          <option value="es">Spanish</option>
-          <option value="tr">Turkish</option>
-          <option value="de">Russian</option>
-        </select>
+        <div className="flex flex-col gap-2">
+          <select 
+            value="" 
+            onChange={handleLanguageChange}
+            className="mb-2"
+          >
+            <option value="">Add a language...</option>
+            {Object.entries(languageOptions).map(([code, name]) => (
+              !language.includes(code) && (
+                <option key={code} value={code}>
+                  {name}
+                </option>
+              )
+            ))}
+          </select>
+          
+          <div className="flex gap-1 flex-wrap">
+            {language.map(lang => (
+              <div key={lang} 
+                   className="bg-white p-1 px-2 rounded-md border border-blue-200 flex gap-1 items-center">
+                {languageOptions[lang]}
+                <button 
+                  type="button"
+                  onClick={() => removeLanguage(lang)}
+                  className="text-red-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
         <label>Number of seats</label>
         <select value={numberOfSeats} onChange={ev => setNumberOfSeats(ev.target.value)}>
           <option value="1">1</option>
