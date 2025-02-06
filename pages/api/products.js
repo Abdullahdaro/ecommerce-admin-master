@@ -5,7 +5,6 @@ import {isAdminRequest} from "@/pages/api/auth/[...nextauth]";
 export default async function handle(req, res) {
   const {method} = req;
   await mongooseConnect();
-  console.log("Connected to MongoDB");
   await isAdminRequest(req,res);
 
   if (method === 'GET') {
