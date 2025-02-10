@@ -32,6 +32,12 @@ export default function Nav({show}) {
           </svg>
           Transfer
         </Link>
+        <Link href={'/hotels'} className={pathname.includes('/hotels') ? activeLink : inactiveLink}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={pathname.includes('/hotels') ? activeIcon : inactiveIcon}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-3 3m0 0h3m0 0h3m-3-3v6m-3-3H6" />
+          </svg>
+          Hotels
+        </Link>
         <Link href={'/tours'} className={pathname.includes('/tours') ? activeLink : inactiveLink}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={pathname.includes('/tours') ? activeIcon : inactiveIcon}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
