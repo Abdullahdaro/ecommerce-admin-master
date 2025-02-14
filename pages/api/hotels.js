@@ -29,8 +29,6 @@ export default async function handler(req, res) {
     try {
       const {name, description, images, category, location, price, rating, reviews, amenities, availability, booking, checkIn, checkOut} = req.body;
       const hotelDoc = await Hotel.create({name, description, images, category, location, price, rating, reviews, amenities, availability, booking, checkIn, checkOut});
-      console.log('hotelDoc', hotelDoc);
-      console.log('req.body', req.body);
       res.json(hotelDoc);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -39,18 +37,14 @@ export default async function handler(req, res) {
 
   // Update hotel
   if (method === 'PUT') {
-    const { id } = req.query;
     try {
-      const {name, description, images, category, location, price, rating, reviews, amenities, availability, booking, checkIn, checkOut} = req.body;
-
-      const existingHotel = await Hotel.findById(id);
-      
+      const {_id, name, description, images, category, location, price, rating, reviews, amenities, availability, booking, checkIn, checkOut} = req.body;
+      const existingHotel = await Hotel.findById(_id);
       if (!existingHotel) {
         return res.status(404).json({ error: 'Hotel not found' });
       }
-
       const updatedHotel = await Hotel.findByIdAndUpdate(
-        id,
+        _id,
         {name, description, images, category, location, price, rating, reviews, amenities, availability, booking, checkIn, checkOut},
         { new: true } // returns updated document
       );
