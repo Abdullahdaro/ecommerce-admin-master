@@ -11,21 +11,14 @@ export default function EditHotel() {
   const { id } = router.query;
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
     axios.get(`/api/hotels?id=${id}`).then(response => {
       setHotelData(response.data);
       setIsLoading(false);
     });
   }, [id]);
-
-  async function handleSubmit(updatedData) {
-    try {
-      await axios.put(`/api/hotels?id=${id}`, updatedData);
-      router.push('/hotels');
-    } catch (error) {
-      console.error('Error updating hotel:', error);
-    }
-  }
 
   if (isLoading) {
     return (
@@ -38,7 +31,9 @@ export default function EditHotel() {
   return (
     <Layout>
       <h1 className="text-center text-primary text-2xl mb-4">Edit Hotel</h1>
-      <HotelForm initialData={hotelData} onSubmit={handleSubmit} />
+      {hotelData && (
+        <HotelForm {...hotelData} />
+      )}
     </Layout>
   );
 }

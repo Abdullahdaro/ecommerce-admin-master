@@ -40,6 +40,7 @@ export default function ProductForm({
   const [selectedFile, setSelectedFile] = useState(null);
 
   const router = useRouter();
+
   useEffect(() => {
     axios.get('/api/categories').then(result => {
       setCategories(result.data);
@@ -60,8 +61,6 @@ export default function ProductForm({
       disableSeat,
       meetAndGreet,
     };
-
-    console.log('data', data);
 
     try {
       if (_id) {

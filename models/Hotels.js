@@ -18,4 +18,5 @@ const HotelSchema = new Schema({
   timestamps: true,
 });
 
+delete mongoose.models.Hotel;
 export const Hotel = models?.Hotel || model('Hotel', HotelSchema);

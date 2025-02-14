@@ -59,7 +59,7 @@ export default async function handle(req, res) {
       } = req.body;
 
       const existingProduct = await Product.findById(_id);
-      console.log("existingProduct", existingProduct);
+   
       if (!existingProduct) {
         return res.status(404).json({ error: 'Product not found' });
       }

@@ -8,6 +8,7 @@ export default function EditProductPage() {
   const [productInfo, setProductInfo] = useState(null);
   const router = useRouter();
   const {id} = router.query;
+  
   useEffect(() => {
     if (!id) {
       return;
